@@ -1,0 +1,7 @@
+{
+  "name": "@homeflow/common",
+  "version": "1.0.0",
+  "description": "Shared constants and utilities for HomeFlow microservices",
+  "main": "index.js",
+  "type": "module"
+}
