@@ -7,6 +7,8 @@ import authRoutes from './routes/auth.routes.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 import createError from 'http-errors';
 import { MESSAGES } from '@homeflow/common';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './config/swagger.js';
 
 const app = express();
 
@@ -20,6 +22,9 @@ app.use(pinoHttp({ logger }));
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', service: 'auth-service' });
 });
+
+// Swagger UI
+app.use('/homeSphere/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
 app.use('/auth', authRoutes);

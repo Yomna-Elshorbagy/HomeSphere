@@ -9,6 +9,8 @@
     "packages/*"
   ],
   "scripts": {
+    "dev:auth": "npm run dev --workspace=@homeflow/auth-service",
+    "db:migrate:auth": "npm run db:migrate --workspace=@homeflow/auth-service",
     "test": "jest",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{js,json,md}\""
