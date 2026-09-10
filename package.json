@@ -11,6 +11,10 @@
   "scripts": {
     "dev:auth": "npm run dev --workspace=@homeflow/auth-service",
     "db:migrate:auth": "npm run db:migrate --workspace=@homeflow/auth-service",
+    "dev:home": "npm run dev --workspace=@homeflow/home-service",
+    "db:migrate:home": "npm run db:migrate --workspace=@homeflow/home-service",
+    "dev:device": "npm run dev --workspace=@homeflow/device-service",
+    "db:migrate:device": "npm run db:migrate --workspace=@homeflow/device-service",
     "test": "jest",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{js,json,md}\""

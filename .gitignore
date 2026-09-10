@@ -124,3 +124,6 @@ dist
 
 # Windows files
 Thumbs.db
+
+# Documentation
+docs/

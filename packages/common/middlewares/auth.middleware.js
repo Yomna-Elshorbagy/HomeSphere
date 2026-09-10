@@ -1,6 +1,6 @@
 import createError from 'http-errors';
 import { verifyAccessToken } from '../utils/jwt.util.js';
-import { MESSAGES } from '@homeflow/common';
+import { MESSAGES } from '../messages.js';
 
 export const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;

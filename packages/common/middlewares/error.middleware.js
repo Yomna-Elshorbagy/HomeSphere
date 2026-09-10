@@ -1,5 +1,6 @@
 import logger from '../utils/logger.util.js';
-import { MESSAGES, sendError } from '@homeflow/common';
+import { MESSAGES } from '../messages.js';
+import { sendError } from '../responses.js';
 
 // eslint-disable-next-line no-unused-vars
 export const errorHandler = (err, req, res, next) => {

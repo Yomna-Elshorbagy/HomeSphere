@@ -1,8 +1,7 @@
 import express from 'express';
 import * as authController from '../controllers/auth.controller.js';
 import { registerSchema, loginSchema, refreshSchema } from '../validators/auth.validator.js';
-import { validate } from '../middlewares/validate.middleware.js';
-import { authenticate } from '../middlewares/auth.middleware.js';
+import { validate, authenticate } from '@homeflow/common';
 
 const router = express.Router();
 

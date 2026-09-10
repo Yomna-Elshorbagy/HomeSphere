@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { MESSAGES, sendError } from '@homeflow/common';
+import { MESSAGES } from '../messages.js';
+import { sendError } from '../responses.js';
 
 export const validate = (schema) => (req, res, next) => {
   try {

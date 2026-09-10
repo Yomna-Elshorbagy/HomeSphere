@@ -2,8 +2,7 @@ import createError from 'http-errors';
 import crypto from 'crypto';
 import * as authRepo from '../repositories/auth.repository.js';
 import { hashPassword, comparePassword } from '../utils/password.util.js';
-import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../utils/jwt.util.js';
-import { MESSAGES, AccountStatus } from '@homeflow/common';
+import { signAccessToken, signRefreshToken, verifyRefreshToken, MESSAGES, AccountStatus } from '@homeflow/common';
 
 export const hashToken = (token) => {
   return crypto.createHash('sha256').update(token).digest('hex');

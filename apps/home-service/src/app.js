@@ -3,10 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import pinoHttp from 'pino-http';
 import { logger, errorHandler, MESSAGES } from '@homeflow/common';
-import authRoutes from './routes/auth.routes.js';
+import homeRoutes from './routes/home.routes.js';
 import createError from 'http-errors';
-import swaggerUi from 'swagger-ui-express';
-import swaggerSpec from './config/swagger.js';
 
 const app = express();
 
@@ -18,14 +16,11 @@ app.use(pinoHttp({ logger }));
 
 // Health check
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', service: 'auth-service' });
+  res.status(200).json({ status: 'OK', service: 'home-service' });
 });
 
-// Swagger UI
-app.use('/homeSphere/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
 // Routes
-app.use('/auth', authRoutes);
+app.use('/homes', homeRoutes);
 
 // 404 Handler
 app.use((req, res, next) => {
