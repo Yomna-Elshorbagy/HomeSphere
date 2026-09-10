@@ -1,0 +1,11 @@
+{
+  "name": "@homeflow/home-service",
+  "version": "1.0.0",
+  "description": "HomeSphere Home Service",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate"
+  }
+}

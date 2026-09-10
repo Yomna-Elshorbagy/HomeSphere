@@ -1,0 +1,49 @@
+// Prisma schema file for the Home Service
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Home {
+  id        String   @id @default(uuid())
+  name      String
+  ownerId   String   // Soft relation to User in auth_db
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rooms   Room[]
+  members HomeMember[]
+
+  @@index([ownerId])
+}
+
+model Room {
+  id        String   @id @default(uuid())
+  name      String
+  homeId    String
+  createdAt DateTime @default(now())
+
+  home Home @relation(fields: [homeId], references: [id], onDelete: Cascade)
+
+  @@index([homeId])
+}
+
+model HomeMember {
+  id          String   @id @default(uuid())
+  homeId      String
+  userId      String   // Soft relation to User in auth_db
+  role        String   @default("MEMBER") // ADMIN or MEMBER
+  permissions String?  // JSON string or comma-separated permissions
+  joinedAt    DateTime @default(now())
+
+  home Home @relation(fields: [homeId], references: [id], onDelete: Cascade)
+
+  @@unique([homeId, userId])
+  @@index([userId])
+}

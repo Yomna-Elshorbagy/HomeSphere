@@ -1,0 +1,11 @@
+{
+  "name": "@homeflow/device-service",
+  "version": "1.0.0",
+  "description": "HomeSphere Device Service",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate"
+  }
+}
