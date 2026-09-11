@@ -6,7 +6,8 @@ import {
   createRoomSchema, 
   addMemberSchema 
 } from '../validators/home.validator.js';
-import { validate, authenticate } from '@homeflow/common';
+import { validate } from '@homesphere/validation';
+import { authenticate } from '@homesphere/auth';
 
 const router = express.Router();
 

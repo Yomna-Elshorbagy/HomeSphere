@@ -1,5 +1,5 @@
 {
-  "name": "@homeflow/home-service",
+  "name": "@homesphere/home-service",
   "version": "1.0.0",
   "description": "HomeSphere Home Service",
   "main": "src/server.js",
@@ -10,7 +10,10 @@
     "db:generate": "prisma generate"
   },
   "dependencies": {
-    "@homeflow/common": "^1.0.0",
+    "@homesphere/auth": "*",
+    "@homesphere/common": "^1.0.0",
+    "@homesphere/logger": "*",
+    "@homesphere/validation": "*",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",

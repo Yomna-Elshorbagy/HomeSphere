@@ -1,5 +1,5 @@
 {
-  "name": "@homeflow/device-service",
+  "name": "@homesphere/device-service",
   "version": "1.0.0",
   "description": "HomeSphere Device Service",
   "main": "src/server.js",

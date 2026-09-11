@@ -1,0 +1,10 @@
+{
+  "name": "@homesphere/logger",
+  "version": "1.0.0",
+  "description": "Shared logger for HomeSphere microservices",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "pino": "^10.3.1"
+  }
+}

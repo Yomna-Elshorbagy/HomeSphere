@@ -1,6 +1,6 @@
 import app from './app.js';
 import { env } from './config/env.js';
-import { logger } from '@homeflow/common';
+import logger from '@homesphere/logger';
 import prisma from './prisma/client.js';
 
 const PORT = env.PORT || 3001;

@@ -1,7 +1,7 @@
 {
-  "name": "homeflow-backend",
+  "name": "homesphere-backend",
   "version": "1.0.0",
-  "description": "HomeFlow Backend Monorepo",
+  "description": "HomeSphere Backend Monorepo",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -9,12 +9,12 @@
     "packages/*"
   ],
   "scripts": {
-    "dev:auth": "npm run dev --workspace=@homeflow/auth-service",
-    "db:migrate:auth": "npm run db:migrate --workspace=@homeflow/auth-service",
-    "dev:home": "npm run dev --workspace=@homeflow/home-service",
-    "db:migrate:home": "npm run db:migrate --workspace=@homeflow/home-service",
-    "dev:device": "npm run dev --workspace=@homeflow/device-service",
-    "db:migrate:device": "npm run db:migrate --workspace=@homeflow/device-service",
+    "dev:auth": "npm run dev --workspace=@homesphere/auth-service",
+    "db:migrate:auth": "npm run db:migrate --workspace=@homesphere/auth-service",
+    "dev:home": "npm run dev --workspace=@homesphere/home-service",
+    "db:migrate:home": "npm run db:migrate --workspace=@homesphere/home-service",
+    "dev:device": "npm run dev --workspace=@homesphere/device-service",
+    "db:migrate:device": "npm run db:migrate --workspace=@homesphere/device-service",
     "test": "jest",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{js,json,md}\""

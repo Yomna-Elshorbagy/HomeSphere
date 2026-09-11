@@ -1,5 +1,5 @@
 import * as authService from '../services/auth.service.js';
-import { sendSuccess } from '@homeflow/common';
+import { sendSuccess } from '@homesphere/common';
 
 export const register = async (req, res, next) => {
   try {

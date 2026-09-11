@@ -1,6 +1,6 @@
 import createError from 'http-errors';
 import { verifyAccessToken } from '../utils/jwt.util.js';
-import { MESSAGES } from '../messages.js';
+import { MESSAGES } from '@homesphere/common';
 
 export const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;

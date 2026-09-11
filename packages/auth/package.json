@@ -1,0 +1,11 @@
+{
+  "name": "@homesphere/auth",
+  "version": "1.0.0",
+  "description": "Shared auth middlewares and utils for HomeSphere microservices",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "jsonwebtoken": "^9.0.3",
+    "@homesphere/common": "*"
+  }
+}

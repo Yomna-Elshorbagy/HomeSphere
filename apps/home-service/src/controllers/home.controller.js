@@ -1,5 +1,5 @@
 import * as homeService from '../services/home.service.js';
-import { MESSAGES, sendSuccess } from '@homeflow/common';
+import { MESSAGES, sendSuccess } from '@homesphere/common';
 
 export const createHome = async (req, res, next) => {
   try {

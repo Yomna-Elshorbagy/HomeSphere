@@ -1,4 +1,4 @@
-import logger from '../utils/logger.util.js';
+import logger from '@homesphere/logger';
 import { MESSAGES } from '../messages.js';
 import { sendError } from '../responses.js';
 

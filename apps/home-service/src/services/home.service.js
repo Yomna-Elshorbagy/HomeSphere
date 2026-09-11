@@ -1,6 +1,6 @@
 import createError from 'http-errors';
 import prisma from '../prisma/client.js';
-import { MESSAGES } from '@homeflow/common';
+import { MESSAGES } from '@homesphere/common';
 
 export const createHome = async (ownerId, data) => {
   return prisma.home.create({

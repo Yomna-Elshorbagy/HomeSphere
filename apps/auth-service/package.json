@@ -1,7 +1,7 @@
 {
-  "name": "@homeflow/auth-service",
+  "name": "@homesphere/auth-service",
   "version": "1.0.0",
-  "description": "HomeFlow Auth Service",
+  "description": "HomeSphere Auth Service",
   "main": "src/server.js",
   "type": "module",
   "scripts": {
@@ -12,7 +12,10 @@
     "db:seed": "node prisma/seed.js"
   },
   "dependencies": {
-    "@homeflow/common": "*",
+    "@homesphere/common": "*",
+    "@homesphere/logger": "*",
+    "@homesphere/validation": "*",
+    "@homesphere/auth": "*",
     "@prisma/client": "^5.22.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
