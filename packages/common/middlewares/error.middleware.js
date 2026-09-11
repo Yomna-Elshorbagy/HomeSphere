@@ -1,6 +1,5 @@
 import logger from '@homesphere/logger';
 import { MESSAGES } from '../messages.js';
-import { sendError } from '../responses.js';
 
 // eslint-disable-next-line no-unused-vars
 export const errorHandler = (err, req, res, next) => {

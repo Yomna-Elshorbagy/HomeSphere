@@ -1,11 +1,9 @@
-module.exports = {
-  projects: [
-    '<rootDir>/apps/*',
-    '<rootDir>/packages/*'
-  ],
+export default {
   testEnvironment: 'node',
+  transform: {},
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
   clearMocks: true,
-  collectCoverage: true,
-  coverageDirectory: 'coverage',
-  coverageProvider: 'v8',
+  roots: ['<rootDir>/apps'],
 };

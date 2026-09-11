@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { MESSAGES, sendError } from '@homesphere/common';
 
 export const validate = (schema) => (req, res, next) => {
   try {
@@ -10,9 +9,8 @@ export const validate = (schema) => (req, res, next) => {
     });
     next();
   } catch (err) {
-    if (err instanceof z.ZodError) {
-      const errors = err.errors.map(e => ({ path: e.path.join('.'), message: e.message }));
-      return sendError(res, 400, MESSAGES.VALIDATION_FAILED, errors);
+    if (err.name === 'ZodError' || err.issues) {
+      return res.status(400).json({ success: false, message: 'Validation failed', errors: err.issues || err.errors });
     }
     next(err);
   }

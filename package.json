@@ -15,13 +15,22 @@
     "db:migrate:home": "npm run db:migrate --workspace=@homesphere/home-service",
     "dev:device": "npm run dev --workspace=@homesphere/device-service",
     "db:migrate:device": "npm run db:migrate --workspace=@homesphere/device-service",
-    "test": "jest",
+    "test:setup:auth": "dotenv -e apps/auth-service/.env.test -- npx prisma migrate reset --force --skip-generate --schema=apps/auth-service/prisma/schema.prisma",
+    "test:setup:home": "dotenv -e apps/home-service/.env.test -- npx prisma migrate reset --force --skip-generate --schema=apps/home-service/prisma/schema.prisma",
+    "test:setup": "npm run test:setup:auth && npm run test:setup:home",
+    "test:auth": "dotenv -e apps/auth-service/.env.test -- cross-env NODE_OPTIONS=--experimental-vm-modules jest apps/auth-service",
+    "test:home": "dotenv -e apps/home-service/.env.test -- cross-env NODE_OPTIONS=--experimental-vm-modules jest apps/home-service",
+    "test": "npm run test:setup && npm run test:auth && npm run test:home",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{js,json,md}\""
   },
   "devDependencies": {
+    "cross-env": "^10.1.0",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^8.57.0",
     "jest": "^29.7.0",
-    "prettier": "^3.2.5"
+    "jest-mock-extended": "^4.0.1",
+    "prettier": "^3.2.5",
+    "supertest": "^7.2.2"
   }
 }

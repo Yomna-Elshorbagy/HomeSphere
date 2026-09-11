@@ -13,7 +13,7 @@ export const createHome = async (req, res, next) => {
 export const getHomes = async (req, res, next) => {
   try {
     const homes = await homeService.getHomes(req.user.id);
-    sendSuccess(res, 200, MESSAGES.RETRIEVED('Homes'), homes);
+    sendSuccess(res, 200, MESSAGES.FETCHED('Homes'), homes);
   } catch (err) {
     next(err);
   }
@@ -22,7 +22,7 @@ export const getHomes = async (req, res, next) => {
 export const getHomeById = async (req, res, next) => {
   try {
     const home = await homeService.getHomeById(req.params.id, req.user.id);
-    sendSuccess(res, 200, MESSAGES.RETRIEVED('Home'), home);
+    sendSuccess(res, 200, MESSAGES.FETCHED('Home'), home);
   } catch (err) {
     next(err);
   }
@@ -58,7 +58,7 @@ export const createRoom = async (req, res, next) => {
 export const getRooms = async (req, res, next) => {
   try {
     const rooms = await homeService.getRooms(req.params.homeId, req.user.id);
-    sendSuccess(res, 200, MESSAGES.RETRIEVED('Rooms'), rooms);
+    sendSuccess(res, 200, MESSAGES.FETCHED('Rooms'), rooms);
   } catch (err) {
     next(err);
   }
