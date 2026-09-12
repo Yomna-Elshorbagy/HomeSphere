@@ -31,6 +31,13 @@ const options = {
           summary: 'Get all homes for the logged-in user',
           tags: ['Homes'],
           security: [{ bearerAuth: [] }],
+          parameters: [
+            { name: 'page', in: 'query', schema: { type: 'integer', default: 1 }, description: 'Page number' },
+            { name: 'limit', in: 'query', schema: { type: 'integer', default: 10, maximum: 100 }, description: 'Number of items per page' },
+            { name: 'sortBy', in: 'query', schema: { type: 'string', default: 'createdAt' }, description: 'Field to sort by' },
+            { name: 'sortOrder', in: 'query', schema: { type: 'string', enum: ['asc', 'desc'], default: 'desc' }, description: 'Sort direction' },
+            { name: 'search', in: 'query', schema: { type: 'string' }, description: 'Search term for name and address' }
+          ],
           responses: {
             200: { description: 'List of homes returned successfully' },
             401: { description: 'Unauthorized' },
@@ -124,7 +131,12 @@ const options = {
           tags: ['Rooms'],
           security: [{ bearerAuth: [] }],
           parameters: [
-            { name: 'homeId', in: 'path', required: true, schema: { type: 'string' } }
+            { name: 'homeId', in: 'path', required: true, schema: { type: 'string' } },
+            { name: 'page', in: 'query', schema: { type: 'integer', default: 1 }, description: 'Page number' },
+            { name: 'limit', in: 'query', schema: { type: 'integer', default: 10, maximum: 100 }, description: 'Number of items per page' },
+            { name: 'sortBy', in: 'query', schema: { type: 'string', default: 'createdAt' }, description: 'Field to sort by' },
+            { name: 'sortOrder', in: 'query', schema: { type: 'string', enum: ['asc', 'desc'], default: 'desc' }, description: 'Sort direction' },
+            { name: 'search', in: 'query', schema: { type: 'string' }, description: 'Search term for name' }
           ],
           responses: {
             200: { description: 'List of rooms returned successfully' },

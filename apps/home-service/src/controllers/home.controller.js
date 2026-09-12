@@ -1,5 +1,5 @@
 import * as homeService from '../services/home.service.js';
-import { MESSAGES, sendSuccess } from '@homesphere/common';
+import { MESSAGES, sendSuccess, sendPaginatedSuccess } from '@homesphere/common';
 
 export const createHome = async (req, res, next) => {
   try {
@@ -12,8 +12,8 @@ export const createHome = async (req, res, next) => {
 
 export const getHomes = async (req, res, next) => {
   try {
-    const homes = await homeService.getHomes(req.user.id);
-    sendSuccess(res, 200, MESSAGES.FETCHED('Homes'), homes);
+    const { homes, meta } = await homeService.getHomes(req.user.id, req.query);
+    sendPaginatedSuccess(res, 200, MESSAGES.FETCHED('Homes'), homes, meta);
   } catch (err) {
     next(err);
   }
@@ -57,8 +57,8 @@ export const createRoom = async (req, res, next) => {
 
 export const getRooms = async (req, res, next) => {
   try {
-    const rooms = await homeService.getRooms(req.params.homeId, req.user.id);
-    sendSuccess(res, 200, MESSAGES.FETCHED('Rooms'), rooms);
+    const { rooms, meta } = await homeService.getRooms(req.params.homeId, req.user.id, req.query);
+    sendPaginatedSuccess(res, 200, MESSAGES.FETCHED('Rooms'), rooms, meta);
   } catch (err) {
     next(err);
   }

@@ -1,6 +1,6 @@
 import createError from 'http-errors';
 import prisma from '../prisma/client.js';
-import { MESSAGES } from '@homesphere/common';
+import { MESSAGES, buildPrismaQuery } from '@homesphere/common';
 
 export const createHome = async (ownerId, data) => {
   return prisma.home.create({
@@ -20,17 +20,31 @@ export const createHome = async (ownerId, data) => {
   });
 };
 
-export const getHomes = async (userId) => {
-  return prisma.home.findMany({
-    where: {
-      members: {
-        some: { userId },
-      },
+export const getHomes = async (userId, query = {}) => {
+  const { prismaQuery, meta } = buildPrismaQuery(query, ['name', 'address']);
+  
+  const where = {
+    ...prismaQuery.where,
+    members: {
+      some: { userId },
     },
-    include: {
-      rooms: true,
-    },
-  });
+  };
+
+  const [total, homes] = await prisma.$transaction([
+    prisma.home.count({ where }),
+    prisma.home.findMany({
+      where,
+      skip: prismaQuery.skip,
+      take: prismaQuery.take,
+      orderBy: prismaQuery.orderBy,
+      include: { rooms: true },
+    }),
+  ]);
+
+  return {
+    homes,
+    meta: { ...meta, total, totalPages: Math.ceil(total / meta.limit) },
+  };
 };
 
 export const getHomeById = async (homeId, userId) => {
@@ -77,11 +91,30 @@ export const createRoom = async (homeId, userId, data) => {
   });
 };
 
-export const getRooms = async (homeId, userId) => {
+export const getRooms = async (homeId, userId, query = {}) => {
   await getHomeById(homeId, userId); // verify access
-  return prisma.room.findMany({
-    where: { homeId },
-  });
+  
+  const { prismaQuery, meta } = buildPrismaQuery(query, ['name']);
+  
+  const where = {
+    ...prismaQuery.where,
+    homeId,
+  };
+
+  const [total, rooms] = await prisma.$transaction([
+    prisma.room.count({ where }),
+    prisma.room.findMany({
+      where,
+      skip: prismaQuery.skip,
+      take: prismaQuery.take,
+      orderBy: prismaQuery.orderBy,
+    }),
+  ]);
+
+  return {
+    rooms,
+    meta: { ...meta, total, totalPages: Math.ceil(total / meta.limit) },
+  };
 };
 
 export const addMember = async (homeId, adminUserId, memberEmail, role, permissions) => {

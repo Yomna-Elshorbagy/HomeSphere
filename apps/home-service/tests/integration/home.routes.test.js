@@ -76,6 +76,35 @@ describe('Home Routes Integration Tests', () => {
       expect(res.body.success).toBe(true);
       expect(res.body.data.length).toBe(1);
       expect(res.body.data[0].id).toBe(home.id);
+      expect(res.body.meta).toBeDefined();
+      expect(res.body.meta.page).toBe(1);
+    });
+
+    it('should paginate and filter homes correctly', async () => {
+      // create a couple homes
+      await prisma.home.create({
+        data: {
+          name: 'Alpha Home',
+          ownerId: mockUserId,
+          members: { create: { userId: mockUserId, role: 'ADMIN' } },
+        },
+      });
+      await prisma.home.create({
+        data: {
+          name: 'Beta Home',
+          ownerId: mockUserId,
+          members: { create: { userId: mockUserId, role: 'ADMIN' } },
+        },
+      });
+
+      const res = await request(app).get('/homes?page=1&limit=1&search=Alpha').set('Authorization', authHeader);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.length).toBe(1);
+      expect(res.body.data[0].name).toBe('Alpha Home');
+      expect(res.body.meta.total).toBe(1);
+      expect(res.body.meta.totalPages).toBe(1);
     });
   });
 
@@ -172,6 +201,25 @@ describe('Home Routes Integration Tests', () => {
       const res = await request(app).get(`/homes/${home.id}/rooms`).set('Authorization', authHeader);
       expect(res.statusCode).toBe(200);
       expect(res.body.data.length).toBe(2);
+      expect(res.body.meta).toBeDefined();
+      expect(res.body.meta.total).toBe(2);
+    });
+
+    it('should paginate rooms in a home', async () => {
+      const home = await prisma.home.create({
+        data: {
+          name: 'Test Home 6b',
+          ownerId: mockUserId,
+          members: { create: { userId: mockUserId, role: 'ADMIN' } },
+          rooms: { create: [{ name: 'Kitchen' }, { name: 'Bedroom' }, { name: 'Bathroom' }] },
+        },
+      });
+
+      const res = await request(app).get(`/homes/${home.id}/rooms?limit=2`).set('Authorization', authHeader);
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data.length).toBe(2);
+      expect(res.body.meta.total).toBe(3);
+      expect(res.body.meta.totalPages).toBe(2);
     });
   });
 

@@ -5,5 +5,5 @@ export default {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   clearMocks: true,
-  roots: ['<rootDir>/apps'],
+  roots: ['<rootDir>/apps', '<rootDir>/packages'],
 };

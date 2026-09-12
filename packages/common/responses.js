@@ -11,6 +11,15 @@ export const sendSuccess = (res, statusCode = 200, message, data = null) => {
   return res.status(statusCode).json(response);
 };
 
+export const sendPaginatedSuccess = (res, statusCode = 200, message, data, meta) => {
+  return res.status(statusCode).json({
+    success: true,
+    message,
+    data,
+    meta,
+  });
+};
+
 export const sendError = (res, statusCode = 500, message, errors = null) => {
   const response = {
     success: false,
