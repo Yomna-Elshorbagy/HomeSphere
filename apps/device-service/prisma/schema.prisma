@@ -19,6 +19,7 @@ model Device {
   macAddress String   @unique
   mqttTopic  String?
   status     String   @default("OFFLINE")
+  isOnline   Boolean  @default(false)
   metadata   String?  // JSON string for device-specific config (brightness, temp, etc.)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt

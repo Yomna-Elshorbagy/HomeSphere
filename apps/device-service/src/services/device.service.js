@@ -84,3 +84,58 @@ export const deleteDevice = async (id, userToken) => {
     where: { id },
   });
 };
+
+export const sendCommand = async (id, commandData, userToken) => {
+  const device = await getDeviceById(id);
+  await verifyHomeAccess(device.homeId, userToken);
+
+  // In a real MQTT setup, we would publish to: home/{homeId}/device/{deviceId}/command
+  // For now, we simulate success by updating status if command is ON/OFF
+  let updateData = {};
+  if (commandData.command === 'TURN_ON') updateData.status = 'ON';
+  if (commandData.command === 'TURN_OFF') updateData.status = 'OFF';
+
+  if (Object.keys(updateData).length > 0) {
+    await prisma.device.update({
+      where: { id },
+      data: updateData,
+    });
+  }
+
+  return { success: true, message: `Command ${commandData.command} queued for device ${id}` };
+};
+
+export const getDeviceState = async (id, userToken) => {
+  const device = await getDeviceById(id);
+  await verifyHomeAccess(device.homeId, userToken);
+
+  return {
+    deviceId: device.id,
+    status: device.status,
+    isOnline: device.isOnline,
+    metadata: device.metadata,
+  };
+};
+
+export const getDeviceTelemetry = async (id, userToken) => {
+  const device = await getDeviceById(id);
+  await verifyHomeAccess(device.homeId, userToken);
+
+  // Mock telemetry data based on device type
+  const telemetry = {
+    deviceId: device.id,
+    timestamp: new Date().toISOString(),
+  };
+
+  if (device.type === 'TEMPERATURE_SENSOR' || device.type === 'AC') {
+    telemetry.temperature = 22.5 + Math.random() * 2; // Random around 22-24
+  }
+  if (device.type === 'HUMIDITY_SENSOR') {
+    telemetry.humidity = 40 + Math.random() * 10;
+  }
+  if (device.type === 'SMART_PLUG' || device.type === 'LIGHT') {
+    telemetry.powerUsageWatts = device.status === 'ON' ? (Math.random() * 50 + 10).toFixed(2) : 0;
+  }
+
+  return telemetry;
+};

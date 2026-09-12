@@ -132,6 +132,66 @@ const options = {
             404: { description: 'Device not found' },
           },
         }
+      },
+      '/devices/{id}/command': {
+        post: {
+          summary: 'Send a command to a device',
+          tags: ['Devices (IoT)'],
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['command'],
+                  properties: {
+                    command: { type: 'string', example: 'TURN_ON' },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: 'Command queued successfully' },
+            401: { description: 'Unauthorized' },
+            403: { description: 'Forbidden' },
+            404: { description: 'Device not found' },
+          },
+        }
+      },
+      '/devices/{id}/state': {
+        get: {
+          summary: 'Get current real-time state of a device',
+          tags: ['Devices (IoT)'],
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            200: { description: 'Device state returned successfully' },
+            401: { description: 'Unauthorized' },
+            404: { description: 'Device not found' },
+          },
+        }
+      },
+      '/devices/{id}/telemetry': {
+        get: {
+          summary: 'Get latest telemetry data for a device',
+          tags: ['Devices (IoT)'],
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            200: { description: 'Telemetry returned successfully' },
+            401: { description: 'Unauthorized' },
+            404: { description: 'Device not found' },
+          },
+        }
       }
     },
   },

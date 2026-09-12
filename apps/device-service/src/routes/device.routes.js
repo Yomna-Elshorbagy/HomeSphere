@@ -14,4 +14,9 @@ router.get('/:id', deviceController.getDeviceById);
 router.patch('/:id', validate(updateDeviceSchema), deviceController.updateDevice);
 router.delete('/:id', deviceController.deleteDevice);
 
+// IoT specific endpoints
+router.post('/:id/command', deviceController.sendCommand);
+router.get('/:id/state', deviceController.getDeviceState);
+router.get('/:id/telemetry', deviceController.getDeviceTelemetry);
+
 export default router;

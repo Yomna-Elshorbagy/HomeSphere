@@ -55,3 +55,33 @@ export const deleteDevice = async (req, res, next) => {
     next(err);
   }
 };
+
+export const sendCommand = async (req, res, next) => {
+  try {
+    const token = extractToken(req);
+    const result = await deviceService.sendCommand(req.params.id, req.body, token);
+    sendSuccess(res, 200, 'Command sent successfully', result);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getDeviceState = async (req, res, next) => {
+  try {
+    const token = extractToken(req);
+    const state = await deviceService.getDeviceState(req.params.id, token);
+    sendSuccess(res, 200, 'Device state fetched successfully', state);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getDeviceTelemetry = async (req, res, next) => {
+  try {
+    const token = extractToken(req);
+    const telemetry = await deviceService.getDeviceTelemetry(req.params.id, token);
+    sendSuccess(res, 200, 'Device telemetry fetched successfully', telemetry);
+  } catch (err) {
+    next(err);
+  }
+};
