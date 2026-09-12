@@ -85,6 +85,20 @@ app.use('/homes', authenticate, createProxyMiddleware({
   }
 }));
 
+// Device Service Proxy (Protected)
+app.use('/devices', authenticate, createProxyMiddleware({
+  target: process.env.DEVICE_SERVICE_URL || 'http://localhost:3003',
+  changeOrigin: true,
+  pathRewrite: {
+    '^/devices': '/devices'
+  },
+  onProxyReq: (proxyReq, req, res) => {
+    logger.info(`Proxying request to device-service: ${req.method} ${req.url}`);
+    if (req.id) proxyReq.setHeader('x-request-id', req.id);
+    if (req.user) proxyReq.setHeader('x-user-id', req.user.id);
+  }
+}));
+
 // 404 Handler
 app.use((req, res, next) => {
   next(createError(404, MESSAGES.NOT_FOUND));

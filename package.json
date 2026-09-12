@@ -9,6 +9,7 @@
     "packages/*"
   ],
   "scripts": {
+    "dev": "start npm run dev:auth & start npm run dev:home & start npm run dev:device & start npm run dev:gateway",
     "dev:auth": "npm run dev --workspace=@homesphere/auth-service",
     "db:migrate:auth": "npm run db:migrate --workspace=@homesphere/auth-service",
     "dev:home": "npm run dev --workspace=@homesphere/home-service",
@@ -35,5 +36,8 @@
     "jest-mock-extended": "^4.0.1",
     "prettier": "^3.2.5",
     "supertest": "^7.2.2"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0"
   }
 }
