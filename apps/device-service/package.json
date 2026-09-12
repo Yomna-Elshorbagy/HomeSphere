@@ -11,8 +11,9 @@
   },
   "dependencies": {
     "@homesphere/auth": "*",
-    "@homesphere/common": "^1.0.0",
+    "@homesphere/common": "*",
     "@homesphere/logger": "*",
+    "@homesphere/messaging": "*",
     "@homesphere/validation": "*",
     "@prisma/client": "^5.22.0",
     "axios": "^1.7.9",

@@ -135,7 +135,7 @@ const options = {
       },
       '/devices/{id}/command': {
         post: {
-          summary: 'Send a command to a device',
+          summary: 'Publish an MQTT command to a device',
           tags: ['Devices (IoT)'],
           security: [{ bearerAuth: [] }],
           parameters: [
@@ -156,7 +156,7 @@ const options = {
             },
           },
           responses: {
-            200: { description: 'Command queued successfully' },
+            200: { description: 'Command published to MQTT broker successfully' },
             401: { description: 'Unauthorized' },
             403: { description: 'Forbidden' },
             404: { description: 'Device not found' },

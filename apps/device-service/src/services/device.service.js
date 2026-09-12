@@ -2,7 +2,8 @@ import createError from 'http-errors';
 import prisma from '../prisma/client.js';
 import axios from 'axios';
 import { env } from '../config/env.js';
-import { MESSAGES, buildPrismaQuery } from '@homesphere/common';
+import { MESSAGES, buildPrismaQuery, DeviceType } from '@homesphere/common';
+import { publishMessage } from '@homesphere/messaging';
 
 /**
  * Validates that the user has access to the specified home.
@@ -89,20 +90,10 @@ export const sendCommand = async (id, commandData, userToken) => {
   const device = await getDeviceById(id);
   await verifyHomeAccess(device.homeId, userToken);
 
-  // In a real MQTT setup, we would publish to: home/{homeId}/device/{deviceId}/command
-  // For now, we simulate success by updating status if command is ON/OFF
-  let updateData = {};
-  if (commandData.command === 'TURN_ON') updateData.status = 'ON';
-  if (commandData.command === 'TURN_OFF') updateData.status = 'OFF';
+  const topic = `home/${device.homeId}/device/${id}/command`;
+  publishMessage(topic, commandData);
 
-  if (Object.keys(updateData).length > 0) {
-    await prisma.device.update({
-      where: { id },
-      data: updateData,
-    });
-  }
-
-  return { success: true, message: `Command ${commandData.command} queued for device ${id}` };
+  return { success: true, message: `Command ${commandData.command} published to MQTT broker for device ${id}` };
 };
 
 export const getDeviceState = async (id, userToken) => {
@@ -127,13 +118,13 @@ export const getDeviceTelemetry = async (id, userToken) => {
     timestamp: new Date().toISOString(),
   };
 
-  if (device.type === 'TEMPERATURE_SENSOR' || device.type === 'AC') {
+  if (device.type === DeviceType.TEMPERATURE_SENSOR || device.type === DeviceType.AC) {
     telemetry.temperature = 22.5 + Math.random() * 2; // Random around 22-24
   }
-  if (device.type === 'HUMIDITY_SENSOR') {
+  if (device.type === DeviceType.HUMIDITY_SENSOR) {
     telemetry.humidity = 40 + Math.random() * 10;
   }
-  if (device.type === 'SMART_PLUG' || device.type === 'LIGHT') {
+  if (device.type === DeviceType.SMART_PLUG || device.type === DeviceType.LIGHT) {
     telemetry.powerUsageWatts = device.status === 'ON' ? (Math.random() * 50 + 10).toFixed(2) : 0;
   }
 

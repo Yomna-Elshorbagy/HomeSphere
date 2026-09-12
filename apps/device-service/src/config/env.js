@@ -22,4 +22,5 @@ export const env = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   DATABASE_URL: process.env.DATABASE_URL,
   HOME_SERVICE_URL: process.env.HOME_SERVICE_URL || 'http://localhost:3002',
+  MQTT_URL: process.env.MQTT_URL || 'mqtt://localhost:1883',
 };

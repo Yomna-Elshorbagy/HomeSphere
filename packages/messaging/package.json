@@ -1,0 +1,11 @@
+{
+  "name": "@homesphere/messaging",
+  "version": "1.0.0",
+  "description": "Shared MQTT and RabbitMQ messaging utilities",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "@homesphere/logger": "*",
+    "mqtt": "^5.10.1"
+  }
+}
