@@ -1,7 +1,9 @@
 import dotenv from 'dotenv';
 import { z } from 'zod';
 
-dotenv.config({ path: '../../.env' }); // Load from root
+// Load local .env first (takes precedence)
+dotenv.config();
+dotenv.config({ path: '../../.env' }); // Load from root as fallback
 
 const envSchema = z.object({
   PORT: z.string().default('3002'),

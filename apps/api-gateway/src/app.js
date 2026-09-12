@@ -8,6 +8,7 @@ import logger from '@homesphere/logger';
 import { authenticate } from '@homesphere/auth';
 import { errorHandler, MESSAGES } from '@homesphere/common';
 import createError from 'http-errors';
+import { randomUUID } from 'crypto';
 
 const app = express();
 
@@ -32,7 +33,18 @@ const globalLimiter = rateLimit({
 app.use(globalLimiter);
 
 // Logging
-app.use(pinoHttp({ logger }));
+app.use(pinoHttp({
+  logger,
+  genReqId: (req, res) => {
+    const id = req.headers['x-request-id'] || randomUUID();
+    res.setHeader('X-Request-Id', id);
+    return id;
+  },
+  serializers: {
+    req: (req) => ({ method: req.method, url: req.url }),
+    res: (res) => ({ statusCode: res.statusCode }),
+  },
+}));
 
 // Health Check
 app.get('/health', (req, res) => {
@@ -49,6 +61,7 @@ app.use('/auth', createProxyMiddleware({
   },
   onProxyReq: (proxyReq, req, res) => {
     logger.info(`Proxying request to auth-service: ${req.method} ${req.url}`);
+    if (req.id) proxyReq.setHeader('x-request-id', req.id);
   }
 }));
 
@@ -62,6 +75,8 @@ app.use('/homes', authenticate, createProxyMiddleware({
   },
   onProxyReq: (proxyReq, req, res) => {
     logger.info(`Proxying request to home-service: ${req.method} ${req.url}`);
+    
+    if (req.id) proxyReq.setHeader('x-request-id', req.id);
     
     // Inject user ID header if decoded from JWT, for the microservice to optionally use
     if (req.user) {
