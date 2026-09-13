@@ -6,16 +6,23 @@ let client = null;
 /**
  * Connects to the MQTT broker.
  * @param {string} brokerUrl - The MQTT broker URL (e.g., mqtt://localhost:1883)
+ * @param {string} [username] - Optional username
+ * @param {string} [password] - Optional password
  * @returns {Promise<mqtt.MqttClient>}
  */
-export const connectMqtt = (brokerUrl) => {
+export const connectMqtt = (brokerUrl, username, password) => {
   return new Promise((resolve, reject) => {
     if (client && client.connected) {
       return resolve(client);
     }
 
     logger.info(`Attempting to connect to MQTT broker at ${brokerUrl}...`);
-    client = mqtt.connect(brokerUrl);
+    
+    const options = {};
+    if (username) options.username = username;
+    if (password) options.password = password;
+
+    client = mqtt.connect(brokerUrl, options);
 
     client.on('connect', () => {
       logger.info('✅ Successfully connected to MQTT Broker');

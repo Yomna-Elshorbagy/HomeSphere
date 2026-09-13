@@ -11,7 +11,7 @@ const startServer = async () => {
     console.log('✅ Database connected successfully');
 
     // Connect to MQTT Broker
-    await connectMqtt(env.MQTT_URL);
+    await connectMqtt(env.MQTT_URL, env.MQTT_USERNAME, env.MQTT_PASSWORD);
     
     // Subscribe to all device state and telemetry globally
     subscribeTopic('home/+/device/+/state');

@@ -18,6 +18,7 @@
     "db:migrate:device": "npm run db:migrate --workspace=@homesphere/device-service",
     "db:generate": "npm run db:generate --workspaces --if-present",
     "dev:gateway": "npm run dev --workspace=@homesphere/api-gateway",
+    "dev:simulator": "npm run dev --workspace=@homesphere/device-simulator",
     "start:gateway": "npm run start --workspace=@homesphere/api-gateway",
     "test:setup:auth": "dotenv -e apps/auth-service/.env.test -- npx prisma migrate reset --force --skip-generate --schema=apps/auth-service/prisma/schema.prisma",
     "test:setup:home": "dotenv -e apps/home-service/.env.test -- npx prisma migrate reset --force --skip-generate --schema=apps/home-service/prisma/schema.prisma",

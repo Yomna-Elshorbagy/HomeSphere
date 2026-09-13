@@ -1,0 +1,16 @@
+{
+  "name": "@homesphere/device-simulator",
+  "version": "1.0.0",
+  "description": "Mock IoT hardware simulator for HomeSphere MQTT testing",
+  "main": "src/simulator.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/simulator.js"
+  },
+  "dependencies": {
+    "@homesphere/common": "*",
+    "@homesphere/logger": "*",
+    "@homesphere/messaging": "*",
+    "dotenv": "^16.4.5"
+  }
+}
