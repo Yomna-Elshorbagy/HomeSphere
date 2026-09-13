@@ -6,8 +6,10 @@ dotenv.config();
 dotenv.config({ path: '../../.env' }); // Load from root as fallback
 
 const envSchema = z.object({
-  PORT: z.string().default('3002'),
   DATABASE_URL: z.string().url(),
+  AUTH_SERVICE_URL: z.string().url().default('http://localhost:3000'),
+  JWT_ACCESS_SECRET: z.string().min(1),
+  JWT_REFRESH_SECRET: z.string().min(1),
 });
 
 const parsed = envSchema.safeParse(process.env);

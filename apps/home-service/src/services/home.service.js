@@ -1,4 +1,6 @@
 import createError from 'http-errors';
+import axios from 'axios';
+import { env } from '../config/env.js';
 import prisma from '../prisma/client.js';
 import { MESSAGES, buildPrismaQuery } from '@homesphere/common';
 
@@ -117,15 +119,24 @@ export const getRooms = async (homeId, userId, query = {}) => {
   };
 };
 
-export const addMember = async (homeId, adminUserId, memberEmail, role, permissions) => {
+export const addMember = async (homeId, adminUserId, memberEmail, role, permissions, userToken) => {
   const home = await getHomeById(homeId, adminUserId);
   if (home.ownerId !== adminUserId) {
     throw createError(403, MESSAGES.FORBIDDEN);
   }
 
-  // NOTE: In a real microservice, we would call auth-service here via API/RabbitMQ 
-  // to convert memberEmail to an actual userId. For now we will just assume memberEmail is the userId.
-  const targetUserId = memberEmail; 
+  let targetUserId;
+  try {
+    const response = await axios.get(`${env.AUTH_SERVICE_URL}/users/email/${memberEmail}`, {
+      headers: { Authorization: userToken }
+    });
+    targetUserId = response.data.data.id;
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      throw createError(404, MESSAGES.NOT_FOUND('User with this email'));
+    }
+    throw createError(500, 'Error communicating with auth-service');
+  }
 
   return prisma.homeMember.create({
     data: {

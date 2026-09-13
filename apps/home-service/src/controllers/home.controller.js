@@ -66,12 +66,14 @@ export const getRooms = async (req, res, next) => {
 
 export const addMember = async (req, res, next) => {
   try {
+    const userToken = req.headers.authorization;
     const member = await homeService.addMember(
       req.params.homeId,
       req.user.id,
       req.body.email,
       req.body.role,
-      req.body.permissions
+      req.body.permissions,
+      userToken
     );
     sendSuccess(res, 201, MESSAGES.CREATED('HomeMember'), member);
   } catch (err) {

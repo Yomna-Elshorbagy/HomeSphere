@@ -101,3 +101,9 @@ export const getProfile = async (userId) => {
   if (!user) throw createError(404, MESSAGES.NOT_FOUND('User'));
   return { id: user.id, name: user.name, email: user.email, role: user.role, status: user.status };
 };
+
+export const getUserByEmail = async (email) => {
+  const user = await authRepo.findUserByEmail(email);
+  if (!user) throw createError(404, MESSAGES.NOT_FOUND('User'));
+  return { id: user.id, name: user.name, email: user.email, role: user.role, status: user.status };
+};

@@ -198,10 +198,10 @@ const options = {
             },
           },
           responses: {
-            200: { description: 'Member successfully added' },
+            201: { description: 'Member successfully added' },
             400: { description: 'Validation error' },
             401: { description: 'Unauthorized' },
-            404: { description: 'Home not found' },
+            404: { description: 'Home or User not found' },
           },
         },
       },

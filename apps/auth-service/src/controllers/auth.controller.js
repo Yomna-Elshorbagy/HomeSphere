@@ -51,6 +51,16 @@ export const getProfile = async (req, res, next) => {
   }
 };
 
+export const getUserByEmail = async (req, res, next) => {
+  try {
+    const { email } = req.params;
+    const user = await authService.getUserByEmail(email);
+    return sendSuccess(res, 200, undefined, user);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const forgotPassword = async (req, res, next) => {
   res.status(501).json({ success: false, message: 'Not Implemented' });
 };

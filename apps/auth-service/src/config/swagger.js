@@ -136,6 +136,21 @@ const options = {
           },
         },
       },
+      '/users/email/{email}': {
+        get: {
+          summary: 'Get user details by email (Internal Cross-Service)',
+          tags: ['Users'],
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { name: 'email', in: 'path', required: true, schema: { type: 'string', format: 'email' } }
+          ],
+          responses: {
+            200: { description: 'User details returned successfully' },
+            401: { description: 'Unauthorized' },
+            404: { description: 'User not found' },
+          },
+        },
+      },
     },
   },
   apis: [], // No longer scanning files, paths are explicitly defined above
