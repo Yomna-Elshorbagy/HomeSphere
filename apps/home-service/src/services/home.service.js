@@ -3,6 +3,7 @@ import axios from 'axios';
 import { env } from '../config/env.js';
 import prisma from '../prisma/client.js';
 import { MESSAGES, buildPrismaQuery } from '@homesphere/common';
+import { getCache, setCache, getRedisClient } from '@homesphere/redis';
 
 export const createHome = async (ownerId, data) => {
   return prisma.home.create({
@@ -50,6 +51,18 @@ export const getHomes = async (userId, query = {}) => {
 };
 
 export const getHomeById = async (homeId, userId) => {
+  const cacheKey = `home:${homeId}`;
+
+  // 1. Check Cache
+  const cachedHome = await getCache(cacheKey);
+  if (cachedHome) {
+    // Ensure the requesting user is a member of this cached home
+    const isMember = cachedHome.members.some((m) => m.userId === userId);
+    if (!isMember) throw createError(404, MESSAGES.NOT_FOUND('Home'));
+    return cachedHome;
+  }
+
+  // 2. Fetch from DB
   const home = await prisma.home.findFirst({
     where: {
       id: homeId,
@@ -64,15 +77,25 @@ export const getHomeById = async (homeId, userId) => {
   });
 
   if (!home) throw createError(404, MESSAGES.NOT_FOUND('Home'));
+
+  // 3. Set Cache (1 hour)
+  await setCache(cacheKey, home, 3600);
+
   return home;
 };
 
 export const updateHome = async (homeId, userId, data) => {
   await getHomeById(homeId, userId); // verify access
-  return prisma.home.update({
+  
+  const updatedHome = await prisma.home.update({
     where: { id: homeId },
     data,
   });
+
+  // Invalidate Cache
+  getRedisClient().del(`home:${homeId}`).catch(() => {});
+  
+  return updatedHome;
 };
 
 export const deleteHome = async (homeId, userId) => {
@@ -81,6 +104,9 @@ export const deleteHome = async (homeId, userId) => {
     throw createError(403, MESSAGES.FORBIDDEN);
   }
   await prisma.home.delete({ where: { id: homeId } });
+  
+  // Invalidate Cache
+  getRedisClient().del(`home:${homeId}`).catch(() => {});
 };
 
 export const createRoom = async (homeId, userId, data) => {
@@ -138,7 +164,7 @@ export const addMember = async (homeId, adminUserId, memberEmail, role, permissi
     throw createError(500, 'Error communicating with auth-service');
   }
 
-  return prisma.homeMember.create({
+  const newMember = await prisma.homeMember.create({
     data: {
       homeId,
       userId: targetUserId,
@@ -146,6 +172,11 @@ export const addMember = async (homeId, adminUserId, memberEmail, role, permissi
       permissions,
     },
   });
+
+  // Invalidate Cache since members changed
+  getRedisClient().del(`home:${homeId}`).catch(() => {});
+
+  return newMember;
 };
 
 export const removeMember = async (homeId, adminUserId, targetUserId) => {
@@ -166,4 +197,7 @@ export const removeMember = async (homeId, adminUserId, targetUserId) => {
       },
     },
   });
+
+  // Invalidate Cache since members changed
+  getRedisClient().del(`home:${homeId}`).catch(() => {});
 };

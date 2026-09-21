@@ -19,16 +19,23 @@ app.use(cors({
   credentials: true,
 }));
 
+import { RedisStore } from 'rate-limit-redis';
+import { connectRedis } from '@homesphere/redis';
+
 // Global Rate Limiting
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  max: 100, // Limit each IP to 100 requests per `window`
+  standardHeaders: true, 
+  legacyHeaders: false, 
   message: {
     success: false,
     message: 'Too many requests, please try again later.',
-  }
+  },
+  // Use Redis as the store for distributed rate limiting!
+  store: new RedisStore({
+    sendCommand: (...args) => connectRedis().call(...args),
+  }),
 });
 app.use(globalLimiter);
 

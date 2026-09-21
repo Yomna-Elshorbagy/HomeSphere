@@ -14,6 +14,7 @@
     "@homesphere/common": "*",
     "@homesphere/logger": "*",
     "@homesphere/messaging": "*",
+    "@homesphere/redis": "*",
     "@homesphere/validation": "*",
     "@prisma/client": "^5.22.0",
     "axios": "^1.7.9",

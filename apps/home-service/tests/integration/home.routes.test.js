@@ -2,14 +2,27 @@ import request from 'supertest';
 import app from '../../src/app.js';
 import prisma from '../../src/prisma/client.js';
 import { signAccessToken } from '@homesphere/auth';
+import { connectRedis, getRedisClient } from '@homesphere/redis';
+import { env } from '../../src/config/env.js';
+import axios from 'axios';
+import { jest } from '@jest/globals';
 
 const mockUserId = '123e4567-e89b-12d3-a456-426614174000';
 const token = signAccessToken({ id: mockUserId, email: 'test@example.com' });
 const authHeader = `Bearer ${token}`;
 
 describe('Home Routes Integration Tests', () => {
+  let axiosGetSpy;
+
   beforeAll(async () => {
     await prisma.$connect();
+    connectRedis(env.REDIS_URL);
+    axiosGetSpy = jest.spyOn(axios, 'get').mockImplementation((url) => {
+      if (url.includes('/users/email/')) {
+        return Promise.resolve({ data: { data: { id: 'mocked-user-id' } } });
+      }
+      return Promise.resolve({ data: {} });
+    });
   });
 
   afterAll(async () => {
@@ -17,6 +30,12 @@ describe('Home Routes Integration Tests', () => {
     await prisma.room.deleteMany();
     await prisma.home.deleteMany();
     await prisma.$disconnect();
+    
+    axiosGetSpy.mockRestore();
+    const redis = getRedisClient();
+    if (redis) {
+      await redis.quit();
+    }
   });
 
   afterEach(async () => {
@@ -239,7 +258,7 @@ describe('Home Routes Integration Tests', () => {
         .send({ email: 'newmember@example.com', role: 'MEMBER' });
 
       expect(res.statusCode).toBe(201);
-      expect(res.body.data.userId).toBe('newmember@example.com'); // Mocked target userId
+      expect(res.body.data.userId).toBe('mocked-user-id'); // Mocked target userId
     });
   });
 

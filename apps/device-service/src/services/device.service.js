@@ -4,6 +4,7 @@ import axios from 'axios';
 import { env } from '../config/env.js';
 import { MESSAGES, buildPrismaQuery, DeviceType } from '@homesphere/common';
 import { publishMessage } from '@homesphere/messaging';
+import { getCache, setCache, getRedisClient } from '@homesphere/redis';
 
 /**
  * Validates that the user has access to the specified home.
@@ -60,10 +61,17 @@ export const getDevices = async (homeId, userToken, query = {}) => {
 };
 
 export const getDeviceById = async (id) => {
+  const cacheKey = `device:${id}`;
+
+  const cachedDevice = await getCache(cacheKey);
+  if (cachedDevice) return cachedDevice;
+
   const device = await prisma.device.findUnique({
     where: { id },
   });
   if (!device) throw createError(404, MESSAGES.NOT_FOUND('Device'));
+  
+  await setCache(cacheKey, device, 3600);
   return device;
 };
 
@@ -71,10 +79,13 @@ export const updateDevice = async (id, data, userToken) => {
   const device = await getDeviceById(id);
   await verifyHomeAccess(device.homeId, userToken);
 
-  return prisma.device.update({
+  const updatedDevice = await prisma.device.update({
     where: { id },
     data,
   });
+
+  getRedisClient().del(`device:${id}`).catch(() => {});
+  return updatedDevice;
 };
 
 export const deleteDevice = async (id, userToken) => {
@@ -84,6 +95,8 @@ export const deleteDevice = async (id, userToken) => {
   await prisma.device.delete({
     where: { id },
   });
+
+  getRedisClient().del(`device:${id}`).catch(() => {});
 };
 
 export const sendCommand = async (id, commandData, userToken) => {
@@ -99,6 +112,11 @@ export const sendCommand = async (id, commandData, userToken) => {
 export const getDeviceState = async (id, userToken) => {
   const device = await getDeviceById(id);
   await verifyHomeAccess(device.homeId, userToken);
+
+  const cachedState = await getCache(`device_state:${id}`);
+  if (cachedState) {
+    return cachedState; // Extremely fast response for UI polling
+  }
 
   return {
     deviceId: device.id,

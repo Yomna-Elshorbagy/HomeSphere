@@ -1,6 +1,7 @@
 import logger from '@homesphere/logger';
 import prisma from '../prisma/client.js';
 import { publishEvent } from '@homesphere/messaging';
+import { setCache } from '@homesphere/redis';
 
 /**
  * Handles all incoming MQTT messages, processes them, and syncs them to PostgreSQL.
@@ -22,14 +23,25 @@ export const handleMqttMessage = async (topic, payload) => {
 
     if (messageType === 'state') {
       logger.info(`🏠 Syncing state for device ${deviceId} to DB...`);
+      
+      const newState = {
+        deviceId,
+        status: payload.status,
+        isOnline: payload.isOnline ?? true,
+        lastSeenAt: new Date(),
+      };
+
       await prisma.device.update({
         where: { id: deviceId },
         data: {
-          status: payload.status,
-          isOnline: payload.isOnline ?? true,
-          lastSeenAt: new Date()
+          status: newState.status,
+          isOnline: newState.isOnline,
+          lastSeenAt: newState.lastSeenAt
         }
       });
+
+      // Cache real-time state for ultra-fast UI reads
+      await setCache(`device_state:${deviceId}`, newState, 3600);
       // Broadcast AMQP Event
       await publishEvent('device_events', 'device.state.changed', {
         homeId,
