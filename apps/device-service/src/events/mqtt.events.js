@@ -1,61 +1,72 @@
 import logger from '@homesphere/logger';
 import prisma from '../prisma/client.js';
+import { publishEvent } from '@homesphere/messaging';
 
+/**
+ * Handles all incoming MQTT messages, processes them, and syncs them to PostgreSQL.
+ * It also broadcasts these updates as AMQP events via RabbitMQ for other services to react.
+ * @param {string} topic - e.g. home/{homeId}/device/{deviceId}/state
+ * @param {object} payload - e.g. { status: "ON" }
+ */
 export const handleMqttMessage = async (topic, payload) => {
   try {
-    // Topic formats:
-    // home/{homeId}/device/{deviceId}/state
-    // home/{homeId}/device/{deviceId}/telemetry
-    
-    const parts = topic.split('/');
-    if (parts.length < 5) return;
+    const topicParts = topic.split('/');
+    if (topicParts.length !== 5) return;
 
-    const homeId = parts[1];
-    const deviceId = parts[3];
-    const eventType = parts[4];
+    const homeId = topicParts[1];
+    const deviceTypeStr = topicParts[2]; // 'device'
+    const deviceId = topicParts[3];
+    const messageType = topicParts[4]; // 'state' or 'telemetry'
 
-    if (eventType === 'state') {
-      await handleStateUpdate(deviceId, payload);
-    } else if (eventType === 'telemetry') {
-      await handleTelemetryUpdate(deviceId, payload);
+    if (deviceTypeStr !== 'device') return;
+
+    if (messageType === 'state') {
+      logger.info(`🏠 Syncing state for device ${deviceId} to DB...`);
+      await prisma.device.update({
+        where: { id: deviceId },
+        data: {
+          status: payload.status,
+          isOnline: payload.isOnline ?? true,
+          lastSeenAt: new Date()
+        }
+      });
+      // Broadcast AMQP Event
+      await publishEvent('device_events', 'device.state.changed', {
+        homeId,
+        deviceId,
+        status: payload.status,
+        timestamp: new Date().toISOString()
+      });
+      logger.debug(`✅ Synced state and broadcasted AMQP event for ${deviceId}`);
+    } else if (messageType === 'telemetry') {
+      logger.info(`📈 Syncing telemetry for device ${deviceId} to DB...`);
+      const { timestamp, ...telemetryData } = payload;
+      
+      await prisma.telemetry.create({
+        data: {
+          deviceId,
+          data: telemetryData,
+          timestamp: timestamp ? new Date(timestamp) : new Date()
+        }
+      });
+      
+      // Update device lastSeenAt
+      await prisma.device.update({
+        where: { id: deviceId },
+        data: { lastSeenAt: new Date() }
+      });
+
+      // Broadcast AMQP Event
+      await publishEvent('device_events', 'device.telemetry.updated', {
+        homeId,
+        deviceId,
+        telemetry: telemetryData,
+        timestamp: timestamp || new Date().toISOString()
+      });
+      
+      logger.debug(`✅ Synced telemetry and broadcasted AMQP event for ${deviceId}`);
     }
   } catch (error) {
-    logger.error({ error, topic, payload }, 'Error processing MQTT event');
+    logger.error({ error, topic, payload }, '❌ Failed to process MQTT message in event handler');
   }
-};
-
-const handleStateUpdate = async (deviceId, payload) => {
-  const { status, isOnline, ...metadataUpdates } = payload;
-  
-  // Find device first to make sure it exists
-  const device = await prisma.device.findUnique({ where: { id: deviceId } });
-  if (!device) {
-    logger.warn(`Received state update for unknown device: ${deviceId}`);
-    return;
-  }
-
-  // Merge metadata
-  let newMetadata = {};
-  try {
-    if (device.metadata) newMetadata = JSON.parse(device.metadata);
-  } catch (e) {}
-  
-  newMetadata = { ...newMetadata, ...metadataUpdates };
-
-  await prisma.device.update({
-    where: { id: deviceId },
-    data: {
-      status: status !== undefined ? status : device.status,
-      isOnline: isOnline !== undefined ? Boolean(isOnline) : device.isOnline,
-      metadata: JSON.stringify(newMetadata)
-    }
-  });
-
-  logger.info({ deviceId, status, isOnline }, 'Updated device state from MQTT');
-};
-
-const handleTelemetryUpdate = async (deviceId, payload) => {
-  // In Phase 12, this will go to Analytics Service or TimescaleDB.
-  // For now, just log it.
-  logger.info({ deviceId, telemetry: payload }, 'Received device telemetry from MQTT');
 };

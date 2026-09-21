@@ -6,6 +6,7 @@
   "type": "module",
   "dependencies": {
     "@homesphere/logger": "*",
+    "amqplib": "^0.10.4",
     "mqtt": "^5.10.1"
   }
 }

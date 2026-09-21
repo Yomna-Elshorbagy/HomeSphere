@@ -3,7 +3,7 @@ import { env } from './config/env.js';
 import logger from '@homesphere/logger';
 import prisma from './prisma/client.js';
 
-const PORT = env.PORT || 3001;
+const PORT = process.env.PORT || env.PORT || 3002;
 
 await prisma.$connect();
 console.log('✅ Database connected successfully');

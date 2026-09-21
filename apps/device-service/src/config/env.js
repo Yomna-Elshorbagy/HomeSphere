@@ -25,4 +25,5 @@ export const env = {
   MQTT_URL: process.env.MQTT_URL || 'mqtt://localhost:1883',
   MQTT_USERNAME: process.env.MQTT_USERNAME,
   MQTT_PASSWORD: process.env.MQTT_PASSWORD,
+  RABBITMQ_URL: process.env.RABBITMQ_URL || 'amqp://guest:guest@localhost:5672',
 };
