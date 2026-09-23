@@ -1,5 +1,6 @@
 import swaggerJsdoc from 'swagger-jsdoc';
 import { env } from './env.js';
+import { DeviceType } from '@homesphere/common';
 
 const options = {
   definition: {
@@ -58,7 +59,7 @@ const options = {
                   required: ['name', 'type', 'homeId', 'macAddress'],
                   properties: {
                     name: { type: 'string' },
-                    type: { type: 'string', enum: ['LIGHT', 'THERMOSTAT', 'SENSOR', 'LOCK', 'SWITCH'] },
+                    type: { type: 'string', enum: Object.values(DeviceType) },
                     homeId: { type: 'string' },
                     roomId: { type: 'string' },
                     macAddress: { type: 'string' },

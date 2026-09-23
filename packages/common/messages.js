@@ -18,4 +18,9 @@ export const MESSAGES = {
   // Dynamic Errors
   NOT_FOUND: (entity) => `${entity} not found`,
   ALREADY_IN_USE: (field) => `${field} already in use`,
+
+  // IoT Specific Messages
+  COMMAND_SENT: 'Command sent successfully',
+  STATE_FETCHED: 'Device state fetched successfully',
+  TELEMETRY_FETCHED: 'Device telemetry fetched successfully',
 };
