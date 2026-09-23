@@ -22,22 +22,36 @@ app.use(cors({
 import { RedisStore } from 'rate-limit-redis';
 import { connectRedis } from '@homesphere/redis';
 
-// Global Rate Limiting
+// Global Rate Limiting (Relaxed for IoT)
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per `window`
+  max: 1000, // Limit each IP to 1000 requests per `window`
   standardHeaders: true, 
   legacyHeaders: false, 
   message: {
     success: false,
     message: 'Too many requests, please try again later.',
   },
-  // Use Redis as the store for distributed rate limiting!
   store: new RedisStore({
     sendCommand: (...args) => connectRedis().call(...args),
   }),
 });
 app.use(globalLimiter);
+
+// Strict Rate Limiting for Auth
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30, // Limit each IP to 30 auth requests per `window` to prevent brute force
+  standardHeaders: true, 
+  legacyHeaders: false, 
+  message: {
+    success: false,
+    message: 'Too many authentication attempts, please try again later.',
+  },
+  store: new RedisStore({
+    sendCommand: (...args) => connectRedis().call(...args),
+  }),
+});
 
 // Logging
 app.use(pinoHttp({
@@ -60,7 +74,7 @@ app.get('/health', (req, res) => {
 
 // --- Proxies ---
 // Auth Service Proxy (Public)
-app.use('/auth', createProxyMiddleware({
+app.use('/auth', authLimiter, createProxyMiddleware({
   target: process.env.AUTH_SERVICE_URL || 'http://localhost:3001',
   changeOrigin: true,
   pathRewrite: {
