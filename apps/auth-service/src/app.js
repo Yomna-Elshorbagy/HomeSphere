@@ -36,7 +36,7 @@ app.get('/health', (req, res) => {
 });
 
 // Swagger UI
-app.use('/homeSphere/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs/auth-service', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
 app.use('/auth', authRoutes);
