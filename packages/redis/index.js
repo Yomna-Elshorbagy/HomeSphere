@@ -8,7 +8,7 @@ let redisClient = null;
  * @param {string} url - Redis connection URL (e.g., redis://localhost:6380)
  * @returns {Redis} The ioredis client instance
  */
-export const connectRedis = (url = process.env.REDIS_URL || 'redis://localhost:6380') => {
+export const connectRedis = (url = process.env.REDIS_URL || 'redis://127.0.0.1:6380') => {
   if (redisClient) {
     return redisClient;
   }
