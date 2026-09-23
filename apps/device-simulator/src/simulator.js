@@ -15,8 +15,9 @@ const MQTT_URL = process.env.MQTT_URL || 'mqtt://localhost:1883';
  * It also maintains a loop to publish telemetry data.
  */
 
-// Keep track of devices we've interacted with to send telemetry for them
-const activeDevices = new Set();
+// Keep track of devices we've interacted with to send telemetry for them.
+// We use a Map to store the 'lastSeen' timestamp to prevent memory leaks over time.
+const activeDevices = new Map();
 
 const startSimulator = async () => {
   logger.info('🤖 Starting HomeSphere Device Simulator...');
@@ -46,12 +47,12 @@ const handleIncomingCommand = async (topic, payload) => {
   const homeId = topicParts[1];
   const deviceId = topicParts[3];
   
-  // Register device for telemetry if not already active
+  // Register device for telemetry if not already active, and update its lastSeen timestamp
   const deviceKey = `${homeId}/${deviceId}`;
   if (!activeDevices.has(deviceKey)) {
-    activeDevices.add(deviceKey);
     logger.info(`🆕 New device registered in simulator: ${deviceId} (Home: ${homeId})`);
   }
+  activeDevices.set(deviceKey, Date.now());
 
   const { command } = payload;
   logger.info(`📥 [${deviceId}] Received Command: ${command}`);
@@ -83,7 +84,17 @@ const startTelemetryLoop = () => {
 
     logger.debug(`📊 Simulating telemetry for ${activeDevices.size} devices...`);
     
-    for (const deviceKey of activeDevices) {
+    const now = Date.now();
+    const IDLE_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
+
+    for (const [deviceKey, lastSeen] of activeDevices.entries()) {
+      // Memory Optimization: Remove devices that haven't received commands recently
+      if (now - lastSeen > IDLE_TIMEOUT_MS) {
+        logger.debug(`🧹 Pruning idle device from simulator memory: ${deviceKey}`);
+        activeDevices.delete(deviceKey);
+        continue;
+      }
+
       const [homeId, deviceId] = deviceKey.split('/');
       
       // Generate some mock telemetry data
