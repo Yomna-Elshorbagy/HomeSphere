@@ -9,6 +9,7 @@ import createError from 'http-errors';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
 import { randomUUID } from 'crypto';
+import { cleanupExpiredTokens } from './cron/cleanup.js';
 
 const app = express();
 
@@ -47,5 +48,9 @@ app.use((req, res, next) => {
 
 // Global Error Handler
 app.use(errorHandler);
+
+// Start background cleanup cron job (runs every 24 hours).
+// Safe for multi-instance deployments thanks to Redis Distributed Locks!
+setInterval(cleanupExpiredTokens, 24 * 60 * 60 * 1000);
 
 export default app;

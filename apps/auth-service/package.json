@@ -9,7 +9,8 @@
     "dev": "nodemon src/server.js",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
-    "db:seed": "node prisma/seed.js"
+    "db:seed": "node prisma/seed.js",
+    "cron:cleanup": "node src/cron/cleanup.js"
   },
   "dependencies": {
     "@homesphere/common": "*",

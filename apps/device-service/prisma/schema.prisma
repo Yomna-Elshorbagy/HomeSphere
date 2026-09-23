@@ -26,4 +26,6 @@ model Device {
 
   @@index([homeId])
   @@index([roomId])
+  @@index([homeId, type])
+  @@index([homeId, status])
 }
