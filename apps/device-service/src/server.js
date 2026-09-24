@@ -5,6 +5,7 @@ import prisma from './prisma/client.js';
 import { connectMqtt, subscribeTopic, onMessage, connectRabbitMQ } from '@homesphere/messaging';
 import { connectRedis } from '@homesphere/redis';
 import { handleMqttMessage } from './events/mqtt.events.js';
+import { initializeRabbitMQEvents } from './events/rabbitmq.events.js';
 
 const startServer = async () => {
   try {
@@ -13,6 +14,7 @@ const startServer = async () => {
 
     // Connect to Event Broker (RabbitMQ)
     await connectRabbitMQ(env.RABBITMQ_URL);
+    initializeRabbitMQEvents();
 
     // Connect to Cache (Redis)
     connectRedis(env.REDIS_URL);

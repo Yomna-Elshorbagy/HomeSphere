@@ -4,6 +4,7 @@ import { env } from '../config/env.js';
 import prisma from '../prisma/client.js';
 import { MESSAGES, buildPrismaQuery } from '@homesphere/common';
 import { getCache, setCache, getRedisClient } from '@homesphere/redis';
+import { publishEvent } from '@homesphere/messaging';
 
 export const createHome = async (ownerId, data) => {
   return prisma.home.create({
@@ -107,6 +108,9 @@ export const deleteHome = async (homeId, userId) => {
   
   // Invalidate Cache
   getRedisClient().del(`home:${homeId}`).catch(() => {});
+
+  // Publish event so other services (e.g., device-service) can clean up resources
+  await publishEvent('home_events', 'home.deleted', { homeId });
 };
 
 export const createRoom = async (homeId, userId, data) => {

@@ -10,6 +10,8 @@ const envSchema = z.object({
   AUTH_SERVICE_URL: z.string().url().default('http://localhost:3000'),
   JWT_ACCESS_SECRET: z.string().min(1),
   JWT_REFRESH_SECRET: z.string().min(1),
+  RABBITMQ_URL: z.string().url().default('amqp://guest:guest@localhost:5672'),
+  REDIS_URL: z.string().url().default('redis://localhost:6379'),
 });
 
 const parsed = envSchema.safeParse(process.env);

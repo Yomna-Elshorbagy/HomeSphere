@@ -3,6 +3,7 @@ import { env } from './config/env.js';
 import logger from '@homesphere/logger';
 import prisma from './prisma/client.js';
 import { connectRedis } from '@homesphere/redis';
+import { connectRabbitMQ } from '@homesphere/messaging';
 
 const PORT = process.env.PORT || env.PORT || 3002;
 
@@ -11,6 +12,9 @@ console.log('✅ Database connected successfully');
 
 // Connect to Redis for caching
 connectRedis(env.REDIS_URL);
+
+// Connect to RabbitMQ for event publishing
+await connectRabbitMQ(env.RABBITMQ_URL);
 
 const server = app.listen(PORT, () => {
   logger.info(`🏠 Home Service is running on port ${PORT}`);
