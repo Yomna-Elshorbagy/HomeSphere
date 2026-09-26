@@ -120,6 +120,22 @@ app.use('/devices', authenticate, createProxyMiddleware({
   }
 }));
 
+// Swagger Documentation Proxies
+app.use('/api-docs/auth-service', createProxyMiddleware({
+  target: process.env.AUTH_SERVICE_URL || 'http://localhost:3001',
+  changeOrigin: true,
+}));
+
+app.use('/api-docs/home-service', createProxyMiddleware({
+  target: process.env.HOME_SERVICE_URL || 'http://localhost:3002',
+  changeOrigin: true,
+}));
+
+app.use('/api-docs/device-service', createProxyMiddleware({
+  target: process.env.DEVICE_SERVICE_URL || 'http://localhost:3003',
+  changeOrigin: true,
+}));
+
 // 404 Handler
 app.use((req, res, next) => {
   next(createError(404, MESSAGES.NOT_FOUND));

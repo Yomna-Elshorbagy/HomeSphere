@@ -12,7 +12,7 @@ const options = {
     },
     servers: [
       {
-        url: `http://localhost:${env.PORT}`,
+        url: `http://localhost:${process.env.PORT || 3003}`,
         description: 'Development Server',
       },
     ],
