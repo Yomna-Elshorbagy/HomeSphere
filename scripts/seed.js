@@ -52,10 +52,10 @@ async function seedAuth() {
   const passwordHash = await hashPassword('password123');
 
   const users = [
-    { id: ADMIN_ID, name: 'System Admin', email: 'admin@homesphere.com', passwordHash, role: 'ADMIN', status: 'ACTIVE' },
-    { id: OWNER_1_ID, name: 'John Doe', email: 'john@example.com', passwordHash, role: 'OWNER', status: 'ACTIVE' },
-    { id: MEMBER_1_ID, name: 'Jane Doe', email: 'jane@example.com', passwordHash, role: 'MEMBER', status: 'ACTIVE' },
-    { id: GUEST_1_ID, name: 'Guest User', email: 'guest@example.com', passwordHash, role: 'GUEST', status: 'ACTIVE' },
+    { id: ADMIN_ID, name: 'System Admin', email: 'yomna@homesphere.com', passwordHash, role: 'ADMIN', status: 'ACTIVE' },
+    { id: OWNER_1_ID, name: 'John Doe', email: 'john@homesphere.com', passwordHash, role: 'OWNER', status: 'ACTIVE' },
+    { id: MEMBER_1_ID, name: 'Jane Doe', email: 'jane@homesphere.com', passwordHash, role: 'MEMBER', status: 'ACTIVE' },
+    { id: GUEST_1_ID, name: 'Guest User', email: 'guest@homesphere.com', passwordHash, role: 'GUEST', status: 'ACTIVE' },
   ];
 
   for (const user of users) {
