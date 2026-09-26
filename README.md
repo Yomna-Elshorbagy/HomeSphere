@@ -67,7 +67,26 @@ npm run db:migrate:home
 npm run db:migrate:device
 ```
 
-### 6. Running the Application
+### 6. Database Seeding (Optional)
+To populate the isolated databases with initial test data (Admin, Owner, Homes, Rooms, and IoT Devices) seamlessly, run the global seed script:
+```bash
+npm run db:seed
+```
+
+**Testing the Seed Data:**
+Once seeded, you can log in via the Auth Service Swagger UI (`http://localhost:3000/api-docs/auth-service`) using the following pre-configured credentials:
+- **Owner Account:** `john@homesphere.com` / `password123` (Full access)
+- **Member Account:** `jane@homesphere.com` / `password123` (Has restricted member access to John's home)
+- **Admin Account:** `yomna@homesphere.com` / `password123` (System admin, no homes assigned)
+
+**How to explore the seeded ecosystem:**
+1. **Get your Token:** Log in as `john@homesphere.com` via the Auth Service `/auth/login` endpoint and copy the `accessToken` (Do not include "Bearer", Swagger does this automatically).
+2. **Authorize:** Open both the Home Service and Device Service Swagger pages on port `3000`, click **Authorize**, and paste your token.
+3. **View Homes:** In the Home Service, execute `GET /homes`. You will see "John's Smart Home" and its unique ID.
+4. **View Rooms:** Copy that Home ID and use it in `GET /homes/{homeId}/rooms`. You will see the seeded "Living Room" and "Master Bedroom".
+5. **View Devices:** Head over to the Device Service Swagger, execute `GET /devices` (passing your Home ID as a query parameter). You will see the seeded Smart Light Bulb, Smart Thermostat, and Motion Sensor!
+
+### 7. Running the Application
 To boot up the API Gateway and all microservices concurrently in development mode:
 ```bash
 npm run dev
@@ -87,10 +106,15 @@ npm run dev:simulator
 ```
 
 ## 📖 API Documentation (Swagger)
-The API Gateway seamlessly proxies all documentation, meaning you only need to connect to port `3000`. Once the services are running, you can interact with the APIs directly from your browser:
+The API Gateway seamlessly proxies all documentation, meaning you only need to connect to port `3000`. Once the services are running concurrently (`npm run dev`), you can interact with the APIs directly from your browser:
 - **Auth Service API**: [http://localhost:3000/api-docs/auth-service](http://localhost:3000/api-docs/auth-service)
 - **Home Service API**: [http://localhost:3000/api-docs/home-service](http://localhost:3000/api-docs/home-service)
 - **Device Service API**: [http://localhost:3000/api-docs/device-service](http://localhost:3000/api-docs/device-service)
+
+*Note: If you are running the microservices individually without the gateway, you can access their documentation directly via their respective ports:*
+- **Auth Service (Direct)**: [http://localhost:3001/api-docs/auth-service](http://localhost:3001/api-docs/auth-service)
+- **Home Service (Direct)**: [http://localhost:3002/api-docs/home-service](http://localhost:3002/api-docs/home-service)
+- **Device Service (Direct)**: [http://localhost:3003/api-docs/device-service](http://localhost:3003/api-docs/device-service)
 
 ## 🧪 Testing
 The project features a comprehensive test suite using Jest and Supertest.
